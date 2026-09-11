@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: museheart_music
+    name: lukesaber
     env: python
     plan: free
-    repo: https://github.com/zRitsu/MuseHeart-MusicBot.git
+    repo: https://github.com/toollsdev/lukesaber.git
     buildCommand: pip3 install -r requirements.txt --no-cache-dir
     startCommand: python3 main.py
     envVars:

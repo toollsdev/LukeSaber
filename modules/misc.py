@@ -622,6 +622,8 @@ class Misc(commands.Cog):
                 embed.description += f"> 🤖 **⠂Bot{'s'[:bots_amount^1]}:** `{bots_amount:,}`\n"
 
         embed.description += "### Outras informações:\n"
+        embed.description += "> ⚔️ **Luke's Saber** · Mantido por " \
+                             "[toollsdev](https://github.com/toollsdev/lukesaber)\n"
 
         if active_players_other_bots:
             embed.description += f"> ▶️ **⠂Player{(s:='s'[:active_players_other_bots^1])} ativo{s}:** `{active_players_other_bots:,}`\n"
@@ -635,8 +637,6 @@ class Misc(commands.Cog):
         if listeners:
             embed.description += f"> 🎧 **⠂Ouvinte{'s'[:(lcount:=len(listeners))^1]} atua{'is'[:lcount^1] or 'l'}:** `{lcount:,}`\n"
 
-        if bot.pool.commit:
-            embed.description += f"> 📥 **⠂Commit atual:** [`{bot.pool.commit[:7]}`]({bot.pool.remote_git_url}/commit/{bot.pool.commit})\n"
 
         embed.description += f"> 🐍 **⠂Versão do Python:** `{platform.python_version()}`\n" \
                              f"> 📦 **⠂Versão do Disnake:** `{disnake.__version__}`\n" \
@@ -658,12 +658,7 @@ class Misc(commands.Cog):
             if user_data["custom_prefix"]:
                 embed.description += f"> ⌨️ **⠂Seu prefixo de usuário:** `{disnake.utils.escape_markdown(user_data['custom_prefix'], as_needed=True)}`\n"
 
-        links = "[`[Source]`](https://github.com/zRitsu/MuseHeart-MusicBot)"
 
-        if bot.config["SUPPORT_SERVER"]:
-            links = f"[`[Suporte]`]({bot.config['SUPPORT_SERVER']})  **|** {links}"
-
-        embed.description += f"> 🌐 **⠂**{links}\n"
 
         try:
             owner = bot.appinfo.team.owner
@@ -883,7 +878,7 @@ class Misc(commands.Cog):
             for bot in self.bot.pool.get_all_bots():
 
                 db_data = await bot.pool.database.query_data(collection=str(bot.user.id), db_name=DBModel.guilds, limit=300)
-    
+
                 async with aiofiles.open(f"./local_database/fixfavs_backup/guild_favs_{bot.user.id}.json", "w") as f:
                     await f.write(json.dumps(db_data, indent=4))
 

@@ -937,9 +937,9 @@ class BotPool:
             if os.environ.get("REPL_SLUG"):
                 message += f"Confira se o token foi adicionado nas secrets da replit"
 
-                print(message + ": Guia de como configurar: https://gist.github.com/zRitsu/70737984cbe163f890dae05a80a3ddbe#2---com-o-projeto-j%C3%A1-criado-prossiga-as-etapas-abaixo")
+                print(message + ": Guia de como configurar: https://github.com/toollsdev/lukesaber#configuração")
 
-                message += f'. <a href="https://gist.github.com/zRitsu/70737984cbe163f890dae05a80a3ddbe#2---com-o-projeto-j%C3%A1-criado-prossiga-as-etapas-abaixo" target="_blank">Clique aqui</a> para ver o guia de como configurar.'
+                message += f'. <a href="https://github.com/toollsdev/lukesaber#configuração" target="_blank">Clique aqui</a> para ver o guia de como configurar.'
 
             else:
                 message += " Confira se o token foi configurado na ENV/ENVIRONMENT ou no arquivo .env"
@@ -1362,7 +1362,7 @@ class BotCore(commands.AutoShardedBot):
                   "como bot público\n" \
                   "lembrando que se caso o bot seja divulgado pra ser adicionado publicamente o mesmo terá que " \
                   "estar sob as condições da licença GPL-2: " \
-                  "https://github.com/zRitsu/MuseHeart-MusicBot/blob/main/LICENSE\n" \
+                  "https://github.com/toollsdev/lukesaber/blob/main/LICENSE\n" \
                   "Caso não queira seguir as condições da licença no seu bot, você pode deixar o bot privado desmarcando a " \
                   f"opção public bot acessando o link: https://discord.com/developers/applications/{self.user.id}/bot"
 

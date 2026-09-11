@@ -54,7 +54,8 @@ class IndexHandler(tornado.web.RequestHandler):
             self.write('<h1 style=\"font-size:5vw\">A aplicação será reiniciada em breve...</h1>')
             return
 
-        msg = ""
+        msg = "<h1>Luke's Saber</h1><p>Bot de música para Discord · " \
+              "<a href=\"https://github.com/toollsdev/lukesaber\">toollsdev / lukesaber</a></p>"
 
         if self.message:
             msg += self.message.replace("\n", "</br>")

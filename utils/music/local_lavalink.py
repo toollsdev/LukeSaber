@@ -4,11 +4,14 @@ import platform
 import shutil
 import subprocess
 import tempfile
+import threading
 import time
 import zipfile
 from contextlib import suppress
 
 import requests
+
+from utils.music.oauth_console import watch_lavalink_output
 
 
 def download_file(url, filename):
@@ -261,7 +264,14 @@ def run_lavalink(
     print("🌋 - Iniciando o servidor Lavalink (dependendo da hospedagem o lavalink pode demorar iniciar, "
           "o que pode ocorrer falhas em algumas tentativas de conexão até ele iniciar totalmente).")
 
-    lavalink_process = subprocess.Popen(java_cmd.split(), stdout=subprocess.DEVNULL)
+    lavalink_process = subprocess.Popen(
+        java_cmd.split(), stdout=subprocess.PIPE,
+        text=True, encoding="utf-8", errors="replace", bufsize=1,
+    )
+    threading.Thread(
+        target=watch_lavalink_output, args=(lavalink_process.stdout,),
+        name="lavalink-oauth-console", daemon=True,
+    ).start()
 
     if lavalink_additional_sleep:
         print(f"🕙 - Aguarde {lavalink_additional_sleep} segundos...")

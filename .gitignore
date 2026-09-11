@@ -135,6 +135,7 @@ logs/
 .java/
 test.py
 *.java
+!lavalink_patches/youtube-range-length/*.java
 debugger.py
 discloud.bat
 discloud.txt
