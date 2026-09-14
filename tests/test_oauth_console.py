@@ -1,8 +1,12 @@
 import io
+import os
+import tempfile
 import unittest
 from contextlib import redirect_stdout
 
-from utils.music.oauth_console import YoutubeOAuthConsole, watch_lavalink_output
+import ruamel.yaml
+
+from utils.music.oauth_console import YoutubeOAuthConsole, save_refresh_token, watch_lavalink_output
 
 
 class OAuthConsoleTests(unittest.TestCase):
@@ -51,6 +55,32 @@ class OAuthConsoleTests(unittest.TestCase):
         monitor = YoutubeOAuthConsole(lambda message, **kw: output.append(message))
         monitor.feed('Spotify: invalid_grant')
         self.assertEqual(output, [])
+
+    def test_new_token_is_saved_without_being_printed(self):
+        token = "1//AUTOMATIC_TEST_TOKEN"
+        with tempfile.TemporaryDirectory() as directory:
+            config_path = os.path.join(directory, "application.yml")
+            with open(config_path, "w", encoding="utf-8") as stream:
+                stream.write("plugins:\n  youtube:\n    oauth:\n      enabled: true\n")
+
+            output = []
+            monitor = YoutubeOAuthConsole(
+                lambda message, **kw: output.append(message),
+                token_handler=lambda value: save_refresh_token(value, config_path),
+            )
+            monitor.feed(
+                "OAUTH INTEGRATION: Token retrieved successfully. "
+                f"Store your refresh token as this can be reused. ({token})"
+            )
+
+            yaml = ruamel.yaml.YAML(typ="safe")
+            with open(config_path, "r", encoding="utf-8") as stream:
+                oauth = yaml.load(stream)["plugins"]["youtube"]["oauth"]
+
+        self.assertEqual(oauth["refreshToken"], token)
+        self.assertTrue(oauth["skipInitialization"])
+        self.assertNotIn(token, "\n".join(output))
+        self.assertTrue(any("salvo automaticamente" in message for message in output))
 
 
 if __name__ == '__main__':

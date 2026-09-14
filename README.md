@@ -104,7 +104,7 @@ As opções disponíveis ficam em [`config_loader.py`](config_loader.py). Manten
 
 O servidor utiliza o plugin `youtube-source`. No `application.yml`, a fonte interna antiga do YouTube deve ficar desativada e o plugin deve estar habilitado.
 
-Se a configuração exigir autorização, conclua o fluxo do Google mostrado pelo Lavalink e salve o `refreshToken` na configuração local para reutilizá-lo nas próximas inicializações.
+Se a configuração exigir autorização, conclua o fluxo do Google mostrado pelo Lavalink. Quando o login for aceito, Luke's Saber captura o novo `refreshToken` sem exibi-lo no console, salva-o automaticamente no `application.yml` e o reutiliza nas próximas inicializações. Use uma conta separada, sem dados pessoais importantes, conforme recomendado pelo próprio `youtube-source`.
 
 Esta versão inclui uma [correção local de leitura por blocos](lavalink_patches/youtube-range-length/README.md), validada com youtube-source 1.18.2 e Lavaplayer 2.2.7. O JAR modificado é um arquivo local: siga o procedimento de reconstrução após uma instalação nova. Atualizações do plugin podem remover a correção.
 
@@ -267,7 +267,7 @@ All available settings are documented in [`config_loader.py`](config_loader.py).
 
 The server uses the `youtube-source` plugin. Disable Lavalink's legacy built-in YouTube source in `application.yml` and keep the plugin enabled.
 
-When authorization is required, complete the Google flow displayed by Lavalink and store the `refreshToken` in your local configuration so it can be reused after restarts.
+When authorization is required, complete the Google flow displayed by Lavalink. Once the login is accepted, Luke's Saber captures the new `refreshToken` without printing it to the console, saves it automatically to `application.yml`, and reuses it on future starts. Use a separate account without important personal data, as recommended by `youtube-source` itself.
 
 This version includes a [local chunked-reading fix](lavalink_patches/youtube-range-length/README.md), validated with youtube-source 1.18.2 and Lavaplayer 2.2.7. The modified JAR is a local artifact: follow the rebuild procedure after a fresh installation. Plugin updates may remove the patch.
 

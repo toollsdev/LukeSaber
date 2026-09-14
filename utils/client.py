@@ -651,24 +651,33 @@ class BotPool:
 
         os.environ.update(
             {
-                "GIT_DIR": self.config["GIT_DIR"],
                 "JISHAKU_HIDE": "true",
                 "JISHAKU_NO_DM_TRACEBACK": "true",
                 "JISHAKU_NO_UNDERSCORE": "true",
              }
         )
 
-        try:
-            self.commit = check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
-            print(f"📥 - Commit ver: {self.commit}")
-        except:
-            self.commit = None
+        git_dir = self.config.get("GIT_DIR", "./.git")
+        if os.path.isdir(git_dir):
+            os.environ["GIT_DIR"] = git_dir
+            try:
+                self.commit = check_output(
+                    ['git', 'rev-parse', 'HEAD'], stderr=subprocess.DEVNULL
+                ).decode('ascii').strip()
+                print(f"📥 - Commit ver: {self.commit}")
+            except Exception:
+                self.commit = None
 
-        try:
-            self.remote_git_url = check_output(['git', 'remote', '-v']).decode(
-                'ascii').strip().split("\n")[0][7:].replace(".git", "").replace(" (fetch)", "")
-        except:
-            pass
+            try:
+                self.remote_git_url = check_output(
+                    ['git', 'remote', '-v'], stderr=subprocess.DEVNULL
+                ).decode('ascii').strip().split("\n")[0][7:].replace(".git", "").replace(" (fetch)", "")
+            except Exception:
+                pass
+        else:
+            self.commit = None
+            os.environ.pop("GIT_DIR", None)
+            print("📦 - Instalação sem metadados do Git; verificação de commit ignorada.")
 
         if not self.remote_git_url:
             self.remote_git_url = self.config["SOURCE_REPO"]
