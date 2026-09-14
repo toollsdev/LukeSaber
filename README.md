@@ -22,6 +22,8 @@
 
 Criado para comunidades do mundo todo, o projeto combina uma experiência simples para os ouvintes com opções completas de personalização e hospedagem para administradores.
 
+> **Continuação do projeto original:** Luke's Saber dá continuidade ao [MuseHeart-MusicBot](https://github.com/zRitsu/MuseHeart-MusicBot), criado originalmente por **Alex ([zRitsu](https://github.com/zRitsu))**. Esta versão é personalizada e mantida por **toollsdev**, preservando o crédito, o histórico e a licença do projeto de origem.
+
 Mantido por **[toollsdev](https://github.com/toollsdev)** · [Repositório](https://github.com/toollsdev/LukeSaber) · [Relatar um problema](https://github.com/toollsdev/LukeSaber/issues)
 
 ### 🐾 A origem do nome
@@ -165,7 +167,7 @@ Entre em um canal de voz e use os comandos de música do bot. Use `/setup` para 
 
 ### 📜 Manutenção e licença
 
-**Luke's Saber** é a versão personalizada mantida por **toollsdev**, baseada no projeto MuseHeart-MusicBot, de zRitsu. A personalização não altera a autoria do código preexistente.
+**Luke's Saber** é uma continuação personalizada mantida por **toollsdev** a partir do [MuseHeart-MusicBot](https://github.com/zRitsu/MuseHeart-MusicBot), projeto original criado por **Alex ([zRitsu](https://github.com/zRitsu))**. A continuidade e as personalizações não alteram a autoria do código preexistente.
 
 Os avisos originais permanecem em [`LICENSE`](LICENSE). O projeto mantém a licença GNU GPL indicada nesse arquivo; bibliotecas e componentes externos conservam suas próprias licenças.
 
@@ -186,6 +188,8 @@ O uso dessa ferramenta não substitui a autoria e as licenças do código origin
 **Luke's Saber** is a high-fidelity Discord music bot built to deliver responsive playback, crystal-clear audio, and smooth multi-platform integration directly to your voice channels.
 
 Designed for communities around the world, the project combines a simple listening experience with extensive customization and self-hosting options for administrators.
+
+> **Continuation of the original project:** Luke's Saber continues the work of [MuseHeart-MusicBot](https://github.com/zRitsu/MuseHeart-MusicBot), originally created by **Alex ([zRitsu](https://github.com/zRitsu))**. This version is customized and maintained by **toollsdev** while preserving the credit, history, and license of the original project.
 
 Maintained by **[toollsdev](https://github.com/toollsdev)** · [Repository](https://github.com/toollsdev/LukeSaber) · [Report an issue](https://github.com/toollsdev/LukeSaber/issues)
 
@@ -333,7 +337,7 @@ Join a voice channel and use the music commands. Run `/setup` to configure the d
 
 ### 📜 Maintenance and license
 
-**Luke's Saber** is the customized version maintained by **toollsdev**, based on MuseHeart-MusicBot by zRitsu. These customizations do not change the authorship of pre-existing code.
+**Luke's Saber** is a customized continuation maintained by **toollsdev** from [MuseHeart-MusicBot](https://github.com/zRitsu/MuseHeart-MusicBot), the original project created by **Alex ([zRitsu](https://github.com/zRitsu))**. This continuation and its customizations do not change the authorship of pre-existing code.
 
 The original notices remain in [`LICENSE`](LICENSE). The project follows the GNU GPL license stated in that file; external libraries and components retain their respective licenses.
 
