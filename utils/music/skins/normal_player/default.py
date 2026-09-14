@@ -8,6 +8,7 @@ import disnake
 from utils.music.converters import fix_characters, time_format, get_button_style, music_source_image
 from utils.music.models import LavalinkPlayer
 from utils.others import PlayerControls
+from utils.branding import LukeTheme
 
 
 class DefaultSkin:
@@ -40,22 +41,22 @@ class DefaultSkin:
 
         if not player.paused:
             embed.set_author(
-                name="Tocando Agora:",
+                name=LukeTheme.NOW_PLAYING,
                 icon_url=music_source_image(player.current.info["sourceName"])
             )
 
         else:
             embed.set_author(
-                name="Em Pausa:",
+                name=LukeTheme.PAUSED,
                 icon_url="https://cdn.discordapp.com/attachments/480195401543188483/896013933197013002/pause.png"
             )
 
         if player.current_hint:
-            embed.set_footer(text=f"💡 Dica: {player.current_hint}")
+            embed.set_footer(text=f"✦ DICA  •  {player.current_hint}")
         else:
             embed.set_footer(
-                text=str(player),
-                icon_url="https://i.ibb.co/QXtk5VB/neon-circle.gif"
+                text=f"{LukeTheme.FOOTER}  •  {str(player)}",
+                icon_url=player.bot.user.display_avatar.url
             )
 
         player.mini_queue_feature = True
@@ -65,7 +66,8 @@ class DefaultSkin:
             f"<t:{int((disnake.utils.utcnow() + datetime.timedelta(milliseconds=player.current.duration - player.position)).timestamp())}:R>`]`\n"
             if not player.paused else '')
 
-        txt = f"-# [`{player.current.single_title}`]({player.current.uri or player.current.search_uri})\n\n" \
+        txt = f"## [`{player.current.single_title}`]({player.current.uri or player.current.search_uri})\n" \
+              f"-# {LukeTheme.TAGLINE}\n\n" \
               f"{duration}" \
               f"> -# 👤 **⠂** {player.current.authors_md}"
 
@@ -102,7 +104,7 @@ class DefaultSkin:
 
         txt += f"{vc_txt}\n"
 
-        bar = "https://cdn.discordapp.com/attachments/554468640942981147/1127294696025227367/rainbow_bar3.gif"
+        bar = None
 
         if player.command_log:
             txt += f"```ansi\n [34;1mÚltima Interação:[0m```**┕ {player.command_log_emoji} ⠂**{player.command_log}\n"
@@ -116,7 +118,7 @@ class DefaultSkin:
                     for n, t in (enumerate(itertools.islice(player.queue, 3)))
                 )
 
-                embed_queue = disnake.Embed(title=f"Músicas na fila: {qlenght}", color=color,
+                embed_queue = disnake.Embed(title=f"{LukeTheme.QUEUE}  ·  {qlenght}", color=color,
                                             description=f"\n{queue_txt}")
 
                 if not player.loop and not player.keep_connected and not player.paused:
@@ -136,7 +138,7 @@ class DefaultSkin:
                     f"-# `👍⠂{(n + 1):02}) [{time_format(t.duration) if not t.is_stream else '🔴 Livestream'}]` [`{fix_characters(t.title, 20)}`]({t.uri})"
                     for n, t in (enumerate(itertools.islice(player.queue_autoplay, 3)))
                 )
-                embed_queue = disnake.Embed(title="Próximas músicas recomendadas:", color=color,
+                embed_queue = disnake.Embed(title="✦  RECOMENDAÇÕES", color=color,
                                             description=f"\n{queue_txt}")
                 embed_queue.set_image(url=bar)
 
@@ -147,13 +149,13 @@ class DefaultSkin:
         data["embeds"] = [embed_queue, embed] if embed_queue else [embed]
 
         data["components"] = [
+            disnake.ui.Button(emoji="⏮️", custom_id=PlayerControls.back, style=disnake.ButtonStyle.secondary),
             disnake.ui.Button(emoji="⏯️", custom_id=PlayerControls.pause_resume, style=get_button_style(player.paused)),
-            disnake.ui.Button(emoji="⏮️", custom_id=PlayerControls.back),
-            disnake.ui.Button(emoji="⏹️", custom_id=PlayerControls.stop),
-            disnake.ui.Button(emoji="⏭️", custom_id=PlayerControls.skip),
-            disnake.ui.Button(emoji="<:music_queue:703761160679194734>", custom_id=PlayerControls.queue, disabled=not (player.queue or player.queue_autoplay)),
+            disnake.ui.Button(emoji="⏭️", custom_id=PlayerControls.skip, style=disnake.ButtonStyle.secondary),
+            disnake.ui.Button(emoji="⏹️", custom_id=PlayerControls.stop, style=disnake.ButtonStyle.danger),
+            disnake.ui.Button(emoji="🎶", custom_id=PlayerControls.queue, style=disnake.ButtonStyle.secondary, disabled=not (player.queue or player.queue_autoplay)),
             disnake.ui.Select(
-                placeholder="Mais opções:",
+                placeholder="✦  Controles e opções do player",
                 custom_id="musicplayer_dropdown_inter",
                 min_values=0, max_values=1, required = False,
                 options=[

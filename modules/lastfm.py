@@ -135,9 +135,9 @@ class LastFMView(disnake.ui.View):
 
 class LastFmCog(commands.Cog):
 
-    emoji = "🎧"
-    name = "LastFM"
-    desc_prefix = f"[{emoji} {name}] | "
+    emoji = "📻"
+    name = "Last.fm"
+    desc_prefix = f"{emoji} {name} • "
 
     def __init__(self, bot: BotCore):
         self.bot = bot

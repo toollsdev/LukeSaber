@@ -5,6 +5,7 @@ requests>=2.31.0
 humanize
 motor
 tinymongo
+tinydb-serialization==1.0.4
 dnspython>=2.6.1
 psutil
 aiofiles

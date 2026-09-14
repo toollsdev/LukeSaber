@@ -7,6 +7,7 @@ from disnake.ext import commands
 
 from utils.music.errors import GenericError
 from utils.others import CustomContext
+from utils.branding import LukeTheme
 
 if TYPE_CHECKING:
     from utils.client import BotCore
@@ -45,13 +46,13 @@ class ViewHelp(disnake.ui.View):
 
             b = disnake.SelectOption(
                 label=category, value=category, emoji=emoji, default=category == self.category,
-                description="Ver detalhes dos comandos desta categoria."
+                description="Explorar os comandos desta categoria."
             )
 
             options.append(b)
 
         if options:
-            sel = disnake.ui.Select(placeholder='Escolha uma categoria para ver todos os comandos:', options=options)
+            sel = disnake.ui.Select(placeholder='✦ Escolha uma categoria', options=options)
             sel.callback = self.callback_help
             self.add_item(sel)
 
@@ -173,18 +174,17 @@ class HelpCog(commands.Cog, name="Ajuda"):
 
         embed = disnake.Embed(color=self.bot.get_color(ctx.guild.me))
 
-        txt = f"### ⌨️ ⠂Comando: {ctx.prefix}{cmd}\n```\n{help_cmd}```\n"
+        txt = f"## / {cmd.name}\n-# {LukeTheme.TAGLINE}\n\n{help_cmd}\n"
         if cmd.aliases:
             aliases = " | ".join([f"{ctx.prefix}{ali}" for ali in cmd.aliases])
-            txt += f"🔄 **⠂Alternativas:** ```\n{aliases}```\n"
+            txt += f"\n**Alternativas**\n`{aliases}`\n"
         if hasattr(cmd, 'commands'):
             subs = " | ".join([c.name for c in cmd.commands if (await check_perms(ctx, c))])
             txt += f"🔢 **⠂Subcomandos:** ```{subs}``` Use o comando: `[ {ctx.prefix}help {cmd} subcomando ]` para ver mais detalhes do subcomando.\n\n"
 
         if usage_cmd:
-            txt += f"📘 **⠂Como Usar:** ```\n{usage_cmd}```\n" \
-                   f"⚠️ **⠂Notas sobre o uso dos argumentos no comando:** ```\n" \
-                   f"[] = Obrigatório | <> = Opcional```\n"
+            txt += f"\n**Como usar**\n```\n{usage_cmd}```\n" \
+                   f"-# `[argumento]` obrigatório  •  `<argumento>` opcional\n"
 
         flags = cmd.extras.get("flags")
 
@@ -217,7 +217,7 @@ class HelpCog(commands.Cog, name="Ajuda"):
             if t:
                 txt += ("🚩 **⠂Flags `(opções para adicionar no final do comando)`:**```ini\n" + "\n\n".join(t) + "```")
 
-        embed.set_author(name="Menu de ajuda - Lista de comandos (prefix)", icon_url=self.bot.user.display_avatar.url)
+        embed.set_author(name="LUKE'S SABER  •  CENTRAL DE COMANDOS", icon_url=self.bot.user.display_avatar.url)
 
         embed.description = txt
 
@@ -228,8 +228,8 @@ class HelpCog(commands.Cog, name="Ajuda"):
             owner = appinfo.owner
 
         if (max_pages:=len(cmds)) > 1:
-            embed.set_footer(icon_url=owner.display_avatar.replace(static_format="png"),
-                             text=f"Página: {index + 1} de {max_pages}")
+            embed.set_footer(icon_url=self.bot.user.display_avatar.url,
+                             text=f"{LukeTheme.FOOTER}  •  Página {index + 1}/{max_pages}")
         return embed
 
     @commands.cooldown(2, 5, commands.BucketType.user)
@@ -285,17 +285,16 @@ class HelpCog(commands.Cog, name="Ajuda"):
 
             cmds = ', '.join([c.name for c in sorted(data['cmds'], key=lambda c: c.name)])
             n = len(data['cmds'])
-            lst.append(f"\n\n**{data['emoji']} ⠂{category} ({n} comando{'s' if n > 1 else ''}):**\n`{cmds}`")
+            lst.append(f"\n\n### {data['emoji']}  {category}\n-# {n} comando{'s' if n > 1 else ''}\n`{cmds}`")
 
-        txt = f"{''.join(lst)}\n\n" \
-              "Para obter informações de um comando diretamente, use: \n" \
-              f"`{ctx.prefix}{ctx.invoked_with} <comando/alias>`"
+        txt = f"-# {LukeTheme.TAGLINE}\n{''.join(lst)}\n\n" \
+              f"**Detalhes de um comando**\n`{ctx.prefix}{ctx.invoked_with} <comando>`"
 
         embed = disnake.Embed(
             description=txt.replace(ctx.me.mention, f"@{ctx.me.display_name}").replace(f"<@!{ctx.bot.user.id}>",
                                                                                        f"@{ctx.me.display_name}"),
             color=self.bot.get_color(ctx.guild.me))
-        embed.set_author(name=f"Menu de ajuda - Lista de comandos (prefix)",
+        embed.set_author(name="LUKE'S SABER  •  CENTRAL DE COMANDOS",
                          icon_url=self.bot.user.display_avatar.replace(static_format="png").url)
 
         try:
@@ -303,8 +302,8 @@ class HelpCog(commands.Cog, name="Ajuda"):
         except AttributeError:
             owner = self.bot.appinfo.owner
 
-        embed.set_footer(icon_url=owner.display_avatar.replace(static_format="png").url,
-                         text=f"Dono(a): {owner} [{owner.id}]")
+        embed.set_footer(icon_url=self.bot.user.display_avatar.url,
+                         text=f"{LukeTheme.FOOTER}  •  Use / para comandos rápidos")
 
         view = ViewHelp(ctx, btn_id, get_cmd=self.get_cmd, cmd_list=cmd_lst_new, category_cmd=None,
                  main_embed=embed, timeout=180)

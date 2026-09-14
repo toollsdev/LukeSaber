@@ -22,11 +22,10 @@ No PowerShell, a partir da raiz do projeto, com um JDK instalado:
 ./lavalink_patches/youtube-range-length/build.ps1 -JdkDirectory 'C:\Program Files\Java\jdk-26'
 ```
 
-O script compila e executa os testes sem rede e produz o JAR em
-`.tmp/youtube-range-build/youtube-plugin-1.18.2.jar`.
-Ele não reinicia o servidor nem substitui o plugin instalado.
-Para aplicar, pare o Lavalink, guarde uma cópia do plugin anterior e
-substitua `plugins/youtube-plugin-1.18.2.jar` pelo arquivo produzido.
+O script compila e executa os testes sem rede, guarda o JAR corrigido nesta
+pasta e atualiza `plugins/youtube-plugin-1.18.2.jar`. Reinicie o Lavalink para
+aplicar. Quando o bot precisar baixar novamente o `Lavalink.jar`, o arquivo
+guardado nesta pasta será restaurado automaticamente antes da inicialização.
 
 Uma atualização ou reinstalação do plugin oficial pode remover esta correção.
 Reavalie sua necessidade ao mudar a versão; não aplique automaticamente a

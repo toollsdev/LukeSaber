@@ -24,6 +24,7 @@ from utils.db import DBModel, db_models
 from utils.music.checks import check_requester_channel
 from utils.music.converters import time_format, URL_REG
 from utils.others import select_bot_pool, CustomContext, paginator
+from utils.branding import LukeTheme
 
 if TYPE_CHECKING:
     from utils.client import BotCore
@@ -47,9 +48,9 @@ def remove_blank_spaces(d):
 
 class Misc(commands.Cog):
 
-    emoji = "🔰"
-    name = "Diversos"
-    desc_prefix = f"[{emoji} {name}] | "
+    emoji = "✦"
+    name = "Luke's Saber"
+    desc_prefix = f"{emoji} {name} • "
 
     def __init__(self, bot: BotCore):
         self.bot = bot
@@ -483,7 +484,8 @@ class Misc(commands.Cog):
         except:
             color = bot.get_color()
 
-        embed = disnake.Embed(description="", color=color)
+        embed = disnake.Embed(description=f"-# {LukeTheme.TAGLINE}\n", color=color)
+        embed.set_author(name="LUKE'S SABER  •  INFORMAÇÕES", icon_url=bot.user.display_avatar.url)
 
         active_players_other_bots = 0
         inactive_players_other_bots = 0
@@ -596,7 +598,7 @@ class Misc(commands.Cog):
 
         if len(allbots) < 2:
 
-            embed.description += "### Estatíticas (bot atual):\n" \
+            embed.description += "## ✦ Estatísticas\n" \
                                  f"> 🏙️ **⠂Servidor{'es'[:(svcount:=len(bot.guilds))^1]}:** `{svcount:,}`\n" \
                                  f"> 👥 **⠂Usuário{'s'[:user_count^1]}:** `{user_count:,}`\n"
 
@@ -605,7 +607,7 @@ class Misc(commands.Cog):
 
         else:
 
-            embed.description += "### Estatísticas (totais em todos os bots):\n"
+            embed.description += "## ✦ Estatísticas globais\n"
 
             if public_bot_count:
                 embed.description += f"> 🤖 **⠂Bot{(s:='s'[:public_bot_count^1])} público{s}:** `{public_bot_count:,}`\n"
@@ -621,7 +623,7 @@ class Misc(commands.Cog):
             if bots_amount := len(bots):
                 embed.description += f"> 🤖 **⠂Bot{'s'[:bots_amount^1]}:** `{bots_amount:,}`\n"
 
-        embed.description += "### Outras informações:\n"
+        embed.description += "\n## ⚔️ Sobre o projeto\n"
         embed.description += "> ⚔️ **Luke's Saber** · Mantido por " \
                              "[toollsdev](https://github.com/toollsdev/lukesaber)\n"
 
@@ -674,12 +676,9 @@ class Misc(commands.Cog):
         except AttributeError:
             avatar = owner.default_avatar.with_static_format("png").url
 
-        embed.set_footer(
-            icon_url=avatar,
-            text=f"Dono(a): {owner} [{owner.id}]"
-        )
+        embed.set_footer(icon_url=bot.user.display_avatar.url, text=LukeTheme.FOOTER)
 
-        components = [disnake.ui.Button(custom_id="bot_invite", label="Me adicione no seu servidor")] if [b for b in self.bot.pool.bots if b.appinfo and (b.appinfo.bot_public or await b.is_owner(inter.author))] else None
+        components = [disnake.ui.Button(custom_id="bot_invite", label="Adicionar ao servidor", emoji="⚔️", style=disnake.ButtonStyle.primary)] if [b for b in self.bot.pool.bots if b.appinfo and (b.appinfo.bot_public or await b.is_owner(inter.author))] else None
 
         try:
             await inter.edit_original_message(embed=embed, components=components)

@@ -78,6 +78,9 @@ def run_lavalink(
         lavalink_cpu_cores: int = 1,
         use_jabba: bool = False
 ):
+    patched_youtube_plugin = os.path.realpath(
+        "./lavalink_patches/youtube-range-length/youtube-plugin-1.18.2.jar"
+    )
     arch, osname = platform.architecture()
     jdk_platform = f"{platform.system()}-{arch}-{osname}"
 
@@ -259,14 +262,33 @@ def run_lavalink(
         except:
             pass
 
+        # O download de um novo Lavalink.jar limpa os plugins. Restaure a
+        # correção local antes do gerenciador de dependências iniciar, evitando
+        # que o youtube-source oficial substitua silenciosamente o JAR corrigido.
+        if os.path.isfile(patched_youtube_plugin):
+            os.makedirs("./plugins", exist_ok=True)
+            shutil.copy2(
+                patched_youtube_plugin,
+                "./plugins/youtube-plugin-1.18.2.jar"
+            )
+            print("🛡️ - Correção de leitura do YouTube restaurada automaticamente.")
+
     java_cmd += " -jar Lavalink.jar"
 
     print("🌋 - Iniciando o servidor Lavalink (dependendo da hospedagem o lavalink pode demorar iniciar, "
           "o que pode ocorrer falhas em algumas tentativas de conexão até ele iniciar totalmente).")
 
+    process_options = {}
+    if os.name == "nt":
+        # PM2 runs the bot in the background. Prevent Java/Lavalink from
+        # allocating a separate console window while keeping its output piped
+        # to the bot and, consequently, to the PM2 logs.
+        process_options["creationflags"] = subprocess.CREATE_NO_WINDOW
+
     lavalink_process = subprocess.Popen(
         java_cmd.split(), stdout=subprocess.PIPE,
         text=True, encoding="utf-8", errors="replace", bufsize=1,
+        **process_options,
     )
     threading.Thread(
         target=watch_lavalink_output, args=(lavalink_process.stdout,),

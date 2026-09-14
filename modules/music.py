@@ -21,6 +21,7 @@ from urllib.parse import urlparse, parse_qs, quote
 import aiofiles
 import aiohttp
 import disnake
+import syncedlyrics
 from async_timeout import timeout
 from disnake.ext import commands
 from yt_dlp import YoutubeDL
@@ -50,9 +51,9 @@ sc_profile_regex = re.compile(r"<?https://soundcloud\.com/[a-zA-Z0-9_-]+>?$")
 
 class Music(commands.Cog):
 
-    emoji = "🎶"
+    emoji = "⚔️"
     name = "Música"
-    desc_prefix = f"[{emoji} {name}] | "
+    desc_prefix = f"{emoji} {name} • "
 
     playlist_opts = [
         disnake.OptionChoice("Misturar Playlist", "shuffle"),
@@ -104,6 +105,63 @@ class Music(commands.Cog):
             self.error_report_task = bot.loop.create_task(self.error_report_loop())
         else:
             self.error_report_queue = None
+
+    @staticmethod
+    def _clean_lyrics_search_text(value: str) -> str:
+        """Remove common YouTube decorations that hurt lyrics searches."""
+        value = re.sub(
+            r"\s*[\(\[]\s*(?:official\s+)?(?:music\s+)?"
+            r"(?:video|audio|lyrics?|lyric\s+video|visuali[sz]er|4k|hd)\s*[\)\]]",
+            " ", value or "", flags=re.IGNORECASE,
+        )
+        value = re.sub(
+            r"\s+(?:official\s+(?:music\s+)?(?:video|audio)|lyrics?\s+video|visuali[sz]er)\s*$",
+            "", value, flags=re.IGNORECASE,
+        )
+        value = re.sub(r"\s+-\s+topic\s*$", "", value, flags=re.IGNORECASE)
+        value = re.sub(r"\bvevo\s*$", "", value, flags=re.IGNORECASE)
+        return re.sub(r"\s+", " ", value).strip(" -|[]()")
+
+    @staticmethod
+    def _plain_lyrics(lyrics: str) -> str:
+        """Convert LRC timestamps and metadata into readable Discord text."""
+        output = []
+        for line in (lyrics or "").splitlines():
+            if re.fullmatch(r"\s*\[[a-z]{2,}:.*?]\s*", line, flags=re.IGNORECASE):
+                continue
+            line = re.sub(r"^(?:\[\d{1,3}:\d{2}(?:[.:]\d{1,3})?])+", "", line)
+            line = re.sub(r"<\d{1,3}:\d{2}(?:[.:]\d{1,3})?>", "", line).strip()
+            if line and (not output or output[-1] != line):
+                output.append(line)
+        return "\n".join(output).strip()
+
+    async def _fetch_external_lyrics(self, track) -> Optional[dict]:
+        title = self._clean_lyrics_search_text(track.single_title or track.title)
+        author = self._clean_lyrics_search_text(track.author)
+        query = " - ".join(part for part in (author, title) if part)
+        if not query:
+            return None
+
+        cache_key = f"external:{query.casefold()}"
+        if cache_key in self.bot.pool.lyric_data_cache:
+            return self.bot.pool.lyric_data_cache[cache_key] or None
+
+        try:
+            raw_lyrics = await asyncio.wait_for(
+                asyncio.to_thread(syncedlyrics.search, query), timeout=20,
+            )
+        except Exception as exc:
+            print(f"⚠️ - Falha ao buscar letras externas para {query!r}: {exc}")
+            raw_lyrics = None
+
+        lyrics = self._plain_lyrics(raw_lyrics)
+        result = {
+            "track": {"name": title, "artist": author},
+            "text": lyrics,
+            "provider": "syncedlyrics",
+        } if lyrics else None
+        self.bot.pool.lyric_data_cache[cache_key] = result or {}
+        return result
 
     stage_cd = commands.CooldownMapping.from_cooldown(2, 45, commands.BucketType.guild)
     stage_mc = commands.MaxConcurrency(1, per=commands.BucketType.guild, wait=False)
@@ -5283,6 +5341,14 @@ class Music(commands.Cog):
 
     async def player_controller(self, interaction: disnake.MessageInteraction, control: str, **kwargs):
 
+        # A busca de letras pode depender do Lavalink/YouTube. Confirme a interação
+        # antes de qualquer consulta ou validação para evitar o erro 10062 do Discord.
+        if control == PlayerControls.lyrics and not interaction.response.is_done():
+            try:
+                await interaction.response.defer(ephemeral=True, with_message=True)
+            except disnake.NotFound:
+                return
+
         if not self.bot.bot_ready or not self.bot.is_ready():
             await interaction.send("Ainda estou inicializando...", ephemeral=True)
             return
@@ -5366,7 +5432,7 @@ class Music(commands.Cog):
 
                 can_connect(channel=author.voice.channel, guild=channel.guild)
 
-                await interaction.response.defer()
+                await interaction.response.defer(ephemeral=True, with_message=True)
 
                 if control == PlayerControls.embed_enqueue_playlist:
 
@@ -5534,7 +5600,7 @@ class Music(commands.Cog):
                     ephemeral=True)
                 return
 
-            await interaction.response.defer()
+            await interaction.response.defer(ephemeral=True, with_message=True)
 
             user_data = await self.bot.get_global_data(interaction.author.id, db_name=DBModel.users)
 
@@ -5878,7 +5944,7 @@ class Music(commands.Cog):
                     select_type = view.selected
                     info = choices[select_type]
 
-                await interaction.response.defer()
+                await interaction.response.defer(ephemeral=True, with_message=True)
 
                 user_data = await self.bot.get_global_data(interaction.author.id, db_name=DBModel.users)
 
@@ -5934,29 +6000,25 @@ class Music(commands.Cog):
                     await interaction.send("**Não estou tocando algo no momento...**", ephemeral=True)
                     return
 
-                if not player.current.ytid:
-                    try:
-                        await self.player_interaction_concurrency.release(interaction)
-                    except:
-                        pass
-                    await interaction.send("No momento apenas músicas do youtube são suportadas.", ephemeral=True)
-                    return
-
                 not_found_msg = "Não há letras disponíveis para a música atual..."
 
-                await interaction.response.defer(ephemeral=True, with_message=True)
-
-                if player.current.info["extra"].get("lyrics") is None:
-                    lyrics_data = await player.node.fetch_ytm_lyrics(player.current.ytid)
-                    player.current.info["extra"]["lyrics"] = {} if lyrics_data.get("track") is None else lyrics_data
-
-                elif not player.current.info["extra"]["lyrics"]:
+                if not interaction.response.is_done():
                     try:
-                        await self.player_interaction_concurrency.release(interaction)
-                    except:
-                        pass
-                    await interaction.edit_original_message(f"**{not_found_msg}**")
-                    return
+                        await interaction.response.defer(ephemeral=True, with_message=True)
+                    except disnake.NotFound:
+                        return
+
+                lyrics_data = player.current.info["extra"].get("lyrics")
+                if lyrics_data is None and player.current.ytid:
+                    try:
+                        lyrics_data = await player.node.fetch_ytm_lyrics(player.current.ytid)
+                    except Exception as exc:
+                        print(f"⚠️ - Falha ao buscar letras no YouTube Music: {exc}")
+
+                if not lyrics_data or lyrics_data.get("track") is None:
+                    lyrics_data = await self._fetch_external_lyrics(player.current)
+
+                player.current.info["extra"]["lyrics"] = lyrics_data or {}
 
                 if not player.current.info["extra"]["lyrics"]:
                     try:
@@ -5966,12 +6028,17 @@ class Music(commands.Cog):
                     await interaction.edit_original_message(f"**{not_found_msg}**")
                     return
 
-                player.current.info["extra"]["lyrics"]["track"]["albumArt"] = player.current.info["extra"]["lyrics"]["track"]["albumArt"][:-1]
+                track_data = player.current.info["extra"]["lyrics"].get("track") or {}
+                if track_data.get("albumArt"):
+                    track_data["albumArt"] = track_data["albumArt"][:-1]
 
                 try:
                     lyrics_string = "\n".join([d['line'] for d in  player.current.info["extra"]["lyrics"]['lines']])
                 except KeyError:
                     lyrics_string = player.current.info["extra"]["lyrics"]["text"]
+
+                if len(lyrics_string) > 3800:
+                    lyrics_string = lyrics_string[:3800].rsplit("\n", 1)[0] + "\n\n-# Letra reduzida para caber no Discord."
 
                 try:
                     await self.player_interaction_concurrency.release(interaction)

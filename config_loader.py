@@ -16,7 +16,7 @@ DEFAULT_CONFIG = {
     "AUTO_SYNC_COMMANDS": True,
     "OWNER_IDS": "",
     "COMMAND_LOG": False,
-    "EMBED_COLOR": None,
+    "EMBED_COLOR": "2F81F7",
     "BOT_ADD_REMOVE_LOG": '',
     "BOT_ADD_REMOVE_LOG_CHANNEL_ID": 0,
     "ERROR_REPORT_WEBHOOK": '',
@@ -185,7 +185,7 @@ def load_config():
     try:
         CONFIG["EMBED_COLOR"] = disnake.Color(int(CONFIG["EMBED_COLOR"], 16))
     except:
-        CONFIG["EMBED_COLOR"] = None
+        CONFIG["EMBED_COLOR"] = disnake.Color(0x2F81F7)
 
     # converter strings que requer número int.
     for i in [

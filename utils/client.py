@@ -1324,13 +1324,13 @@ class BotCore(commands.AutoShardedBot):
     def get_color(self, me: Optional[disnake.Member] = None):
 
         if not me:
-            return self.color or 0x2b2d31
+            return self.color or 0x2F81F7
 
         if self.color:
             return self.color
 
         if me.color.value == 0:
-            return 0x2b2d31
+            return 0x2F81F7
 
         return me.color
 
