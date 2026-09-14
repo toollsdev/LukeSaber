@@ -169,11 +169,15 @@ Entre em um canal de voz e use os comandos de música do bot. Use `/setup` para 
 
 Os avisos originais permanecem em [`LICENSE`](LICENSE). O projeto mantém a licença GNU GPL indicada nesse arquivo; bibliotecas e componentes externos conservam suas próprias licenças.
 
+<<<<<<< HEAD
 ### 🤖 Uso de inteligência artificial
 
 O **ChatGPT, da OpenAI**, foi utilizado como ferramenta de apoio durante a personalização do Luke's Saber. Ele auxiliou na análise e reconstrução de alguns trechos de código que estavam quebrados, na investigação de erros e na preparação de correções. O conteúdo, a estrutura e a apresentação deste `README.md` foram produzidos principalmente com o auxílio do ChatGPT e revisados pelo mantenedor do projeto.
 
 O uso dessa ferramenta não substitui a autoria e as licenças do código original. **toollsdev** permanece responsável por revisar, testar, manter e publicar as alterações aplicadas ao repositório.
+=======
+---
+>>>>>>> 453bf3dda566a38476f1e86352db8c29c8df797a
 
 ---
 
@@ -283,6 +287,7 @@ python main.py
 
 On Windows, you can also run `source_start_windows.bat`.
 
+<<<<<<< HEAD
 ### Keep the self-hosted bot online 24/7 with PM2
 
 After preparing the Python environment once, use PM2 to run the bot in the background and restart it automatically if the process stops:
@@ -315,6 +320,8 @@ pm2 stop lukes-saber
 
 Logs are written to `.logs/pm2/`. After updating the code or dependencies, install what changed and run `pm2 restart lukes-saber`.
 
+=======
+>>>>>>> 453bf3dda566a38476f1e86352db8c29c8df797a
 Join a voice channel and use the music commands. Run `/setup` to configure the dedicated player and `/change_skin` to select its appearance.
 
 ### 🩺 Troubleshooting
@@ -330,12 +337,15 @@ Join a voice channel and use the music commands. Run `/setup` to configure the d
 
 The original notices remain in [`LICENSE`](LICENSE). The project follows the GNU GPL license stated in that file; external libraries and components retain their respective licenses.
 
+<<<<<<< HEAD
 ### 🤖 Use of artificial intelligence
 
 **ChatGPT by OpenAI** was used as a supporting tool during the customization of Luke's Saber. It assisted with analyzing and reconstructing parts of the code that were broken, investigating errors, and preparing fixes. The content, structure, and presentation of this `README.md` were produced primarily with ChatGPT's assistance and reviewed by the project maintainer.
 
 This assistance does not replace the authorship or licenses of the original code. **toollsdev** remains responsible for reviewing, testing, maintaining, and publishing the changes applied to the repository.
 
+=======
+>>>>>>> 453bf3dda566a38476f1e86352db8c29c8df797a
 ---
 
 <div align="center">
